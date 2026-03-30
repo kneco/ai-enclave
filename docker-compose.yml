@@ -3,7 +3,7 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: shogun-v2
+    container_name: shogun
     image: mas-secure:latest
     stdin_open: true
     tty: true

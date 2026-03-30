@@ -17,11 +17,11 @@ docker compose build
 docker compose up -d
 
 # 2. 入城
-docker exec -it shogun-v2 bash
+docker exec -it shogun bash
 
 # 3. リポジトリをコンテナ内にclone
-git clone https://github.com/<user>/multi-agent-shogun-v2 /workspace/multi-agent-shogun-v2
-cd /workspace/multi-agent-shogun-v2
+git clone https://github.com/<user>/multi-agent-shogun /workspace/multi-agent-shogun
+cd /workspace/multi-agent-shogun
 
 # 4. Claude Code認証（初回のみ）
 claude
@@ -60,5 +60,5 @@ docker push ghcr.io/<user>/mas-secure:latest
 
 ## 関連
 
-- 計画書: [multi-agent-shogun-secure_plan.md](../multi-agent-shogun-v2/docs/multi-agent-shogun-secure_plan.md)
+- 計画書: [multi-agent-shogun-secure_plan.md](../multi-agent-shogun/docs/multi-agent-shogun-secure_plan.md)
 - 大本: [yohey-w/multi-agent-shogun](https://github.com/yohey-w/multi-agent-shogun)
