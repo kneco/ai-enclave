@@ -1,0 +1,16 @@
+# secrets / local config
+config/secrets_local.yaml
+.env
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Python
+__pycache__/
+*.pyc
+.venv/
