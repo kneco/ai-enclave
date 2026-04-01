@@ -1,19 +1,19 @@
 # ============================================================
-# mas-secure — Docker化された幕府環境
-# Ubuntu 24.04 ベース
+# ai-enclave — Secure AI Agent Development Environment
+# Ubuntu 24.04 Base
 # ============================================================
 FROM ubuntu:24.04
 
-# ビルド引数
+# Build args
 ARG NODE_VERSION=22
 
-# 非対話モード
+# Non-interactive
 ENV DEBIAN_FRONTEND=noninteractive
 ENV TZ=Asia/Tokyo
 ENV LANG=ja_JP.UTF-8
 
 # ============================================================
-# Layer 1: システム基盤（変更頻度: 低）
+# Layer 1: System base (change frequency: low)
 # ============================================================
 RUN apt-get update && apt-get install -y \
     curl wget git vim nano less \
@@ -28,7 +28,7 @@ RUN apt-get update && apt-get install -y \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
-# Layer 2: Node.js（Claude Code CLI依存）
+# Layer 2: Node.js
 # ============================================================
 RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && apt-get install -y nodejs \
@@ -57,27 +57,33 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
 RUN npm install -g @bitwarden/cli
 
 # ============================================================
-# Layer 6: Python依存ライブラリ（Secret Daemon等）
+# Layer 6: Python libraries
 # ============================================================
 RUN pip3 install --no-cache-dir --break-system-packages \
     pyyaml \
     requests
 
 # ============================================================
-# Layer 7: ユーザー設定
+# Layer 7: code-server (browser-based VS Code)
 # ============================================================
-RUN useradd -m -s /bin/bash -u 1000 shogun \
-    && mkdir -p /home/shogun/.claude \
-    && chown -R shogun:shogun /home/shogun
+RUN curl -fsSL https://code-server.dev/install.sh | sh
 
 # ============================================================
-# Layer 8: ワークスペース + intel
+# Layer 8: User setup
+# ============================================================
+RUN userdel -r ubuntu 2>/dev/null || true \
+    && useradd -m -s /bin/bash -u 1000 agent \
+    && mkdir -p /home/agent/.claude \
+    && chown -R agent:agent /home/agent
+
+# ============================================================
+# Layer 9: Workspace + intel
 # ============================================================
 WORKDIR /workspace
-RUN chown shogun:shogun /workspace \
-    && mkdir -p /intel && chown shogun:shogun /intel
+RUN chown agent:agent /workspace \
+    && mkdir -p /intel && chown agent:agent /intel
 
-USER shogun
+USER agent
 
-# entrypointなし（殿の設計思想: 何をやっているか見える）
+# No entrypoint — transparent operation
 CMD ["/bin/bash"]

@@ -1,24 +1,27 @@
 services:
-  shogun:
+  enclave:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: shogun
-    image: mas-secure:latest
+    container_name: ai-enclave
+    image: ai-enclave:latest
     stdin_open: true
     tty: true
     restart: unless-stopped
 
+    ports:
+      - "8080:8080"
+
     volumes:
-      # プロジェクトファイル（コンテナ専用・Windows側から不可視）
-      - shogun-workspace:/workspace
+      # Project files (container-only, invisible from host)
+      - enclave-workspace:/workspace
 
-      # Claude Code 設定の永続化（再起動後も認証維持）
-      - shogun-claude-config:/home/shogun/.claude
+      # Claude Code config persistence (auth survives restart)
+      - enclave-claude-config:/home/agent/.claude
 
-      # 殿の差し入れ専用（読み取り専用）
+      # Read-only data input from host
       - type: bind
-        source: C:\intel
+        source: /mnt/c/intel
         target: /intel
         read_only: true
 
@@ -30,7 +33,7 @@ services:
       - no-new-privileges:true
 
 volumes:
-  shogun-workspace:
-    name: shogun-workspace
-  shogun-claude-config:
-    name: shogun-claude-config
+  enclave-workspace:
+    name: enclave-workspace
+  enclave-claude-config:
+    name: enclave-claude-config

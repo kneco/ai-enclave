@@ -1,64 +1,75 @@
-# mas-secure
+# ai-enclave
 
-Docker化された幕府環境。ファイルシステム隔離により、エージェントの爆発半径をコンテナ内に限定する。
+Secure, isolated AI agent development environment. Containerized with Docker to limit blast radius to the enclave.
 
-## 設計思想
+## What is this?
 
-- **コンテナ = 幕府そのもの**: Ubuntu 24.04 + 全ツールプリセット
-- **Windows隔離**: intel(:ro) の1本のみが接触点。workspace はコンテナ専用
-- **操作感はWSL2と同じ**: `docker exec -it` → 手動で出陣・daemon起動・tmux attach
-- **Secret Daemon**: Bitwarden CLI経由のAPIキー管理。意図的な複雑さを維持
+A pre-configured Docker environment for AI-assisted development. Clone your repo inside, run Claude Code or other AI tools, and work safely — the container cannot touch your host filesystem (except a read-only data input).
 
-## クイックスタート
+## Pre-installed Tools
+
+| Tool | Version | Purpose |
+|------|---------|---------|
+| Claude Code CLI | latest | AI coding assistant |
+| code-server | latest | Browser-based VS Code (port 8080) |
+| GitHub CLI (gh) | latest | GitHub operations |
+| Bitwarden CLI (bw) | latest | Secrets management |
+| Node.js | 22.x | JavaScript runtime |
+| Python 3 | system | Scripting & automation |
+| tmux | system | Terminal multiplexer |
+| git | system | Version control |
+| ripgrep, fd, fzf, jq | system | Search & data processing |
+
+## Quick Start
 
 ```bash
-# 1. ビルド & 起動
+# 1. Build & start
 docker compose build
 docker compose up -d
 
-# 2. 入城
-docker exec -it shogun bash
+# 2. Enter the enclave
+docker exec -it ai-enclave bash
 
-# 3. リポジトリをコンテナ内にclone
-git clone https://github.com/<user>/multi-agent-shogun /workspace/multi-agent-shogun
-cd /workspace/multi-agent-shogun
+# 3. Clone your project
+git clone https://github.com/<user>/<repo> /workspace/<repo>
+cd /workspace/<repo>
 
-# 4. Claude Code認証（初回のみ）
+# 4. Authenticate Claude Code (first time only)
 claude
 
-# 5. 出陣
-bash scripts/shutsujin.sh
-bash scripts/secret_daemon.sh   # マスターPW入力
-tmux attach -t multiagent
+# 5. Start code-server (optional)
+code-server --bind-addr 0.0.0.0:8080 /workspace
+# Then open http://localhost:8080 in your browser
 ```
 
-## ボリューム構成
+## Volume Layout
 
-| ボリューム | 種別 | 用途 |
-|-----------|------|------|
-| `shogun-workspace` | 名前付き | プロジェクトファイル（コンテナ専用） |
-| `shogun-claude-config` | 名前付き | ~/.claude 設定永続化 |
-| `C:\intel` → `/intel:ro` | bind | 殿の差し入れ（読み取り専用） |
+| Volume | Type | Purpose |
+|--------|------|---------|
+| `enclave-workspace` | Named | Project files (container-only) |
+| `enclave-claude-config` | Named | ~/.claude config persistence |
+| `/intel` | Bind (read-only) | Data input from host |
 
-## セキュリティ
+## Security
 
-WSL2比較で、CLAUDE.md Tier 1禁止事項の約80%が「ルールベース → 技術的に不可能」に昇格:
+Compared to running AI agents directly on your host:
 
-- `/mnt/c/` へのアクセス → **物理的に不可能**
-- Windowsシステムファイル破壊 → **不可能（隔離）**
-- intel → **読み取り専用（:ro）技術的強制**
-- 非rootユーザー（shogun:1000）で運用
-- `no-new-privileges` セキュリティオプション
+- **Filesystem isolation**: Cannot access host files outside `/intel` (read-only)
+- **Non-root user**: Runs as `agent` (UID 1000)
+- **no-new-privileges**: Prevents privilege escalation
+- **Named volumes**: Workspace is invisible from host — no accidental host file modification
+- **Read-only intel**: Data input is one-way (host → container)
 
-## image配布
+## Host-side Utilities
+
+| File | Purpose |
+|------|---------|
+| `scripts/ntfy_toast.ps1` | Windows toast notifications via ntfy.sh (PowerShell 5.1+) |
+
+## Image Distribution
 
 ```bash
 # GitHub Container Registry
-docker build -t ghcr.io/<user>/mas-secure:latest .
-docker push ghcr.io/<user>/mas-secure:latest
+docker build -t ghcr.io/<user>/ai-enclave:latest .
+docker push ghcr.io/<user>/ai-enclave:latest
 ```
-
-## 関連
-
-- 計画書: [multi-agent-shogun-secure_plan.md](../multi-agent-shogun/docs/multi-agent-shogun-secure_plan.md)
-- 大本: [yohey-w/multi-agent-shogun](https://github.com/yohey-w/multi-agent-shogun)
