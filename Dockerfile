@@ -36,9 +36,11 @@ RUN curl -fsSL https://deb.nodesource.com/setup_${NODE_VERSION}.x | bash - \
     && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
-# Layer 3: Claude Code CLI
+# Layer 3: Claude Code CLI (official installer, no npm)
+# https://claude.ai/install.sh — installs to ~/.local/bin/claude
 # ============================================================
-RUN npm install -g @anthropic-ai/claude-code
+RUN curl -fsSL https://claude.ai/install.sh | bash \
+    && cp /root/.local/bin/claude /usr/local/bin/claude
 
 # ============================================================
 # Layer 4: GitHub CLI (gh)
@@ -52,9 +54,16 @@ RUN curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
-# Layer 5: Bitwarden CLI (bw)
+# Layer 5: Bitwarden CLI (bw) — binary from GitHub Releases, no npm
+# https://github.com/bitwarden/clients/releases/tag/cli-v2026.2.0
 # ============================================================
-RUN npm install -g @bitwarden/cli
+RUN apt-get update && apt-get install -y unzip \
+    && wget -q https://github.com/bitwarden/clients/releases/download/cli-v2026.2.0/bw-linux-2026.2.0.zip \
+    && unzip bw-linux-2026.2.0.zip \
+    && mv bw /usr/local/bin/bw \
+    && chmod +x /usr/local/bin/bw \
+    && rm bw-linux-2026.2.0.zip \
+    && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # ============================================================
 # Layer 6: Python libraries
@@ -85,5 +94,5 @@ RUN chown agent:agent /workspace \
 
 USER agent
 
-# No entrypoint — transparent operation
-CMD ["/bin/bash"]
+# code-server auto-start + interactive bash
+CMD ["bash", "-c", "code-server --bind-addr 0.0.0.0:8080 /workspace --auth none 2>/tmp/code-server.log & exec bash"]

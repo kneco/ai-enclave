@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ai-enclave Guide</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #0d1117;
+      color: #c9d1d9;
+      font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+    }
+    header {
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 20px 40px;
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    header h1 {
+      font-size: 22px;
+      color: #f0f6fc;
+      letter-spacing: 0.5px;
+    }
+    header .badge {
+      background: #1f6feb;
+      color: #fff;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 20px;
+      font-weight: 600;
+      letter-spacing: 0.5px;
+    }
+    .container {
+      max-width: 860px;
+      margin: 0 auto;
+      padding: 40px 24px;
+    }
+    .section {
+      margin-bottom: 40px;
+      background: #161b22;
+      border: 1px solid #30363d;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    .section-header {
+      background: #1c2128;
+      padding: 14px 20px;
+      border-bottom: 1px solid #30363d;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .section-num {
+      background: #1f6feb;
+      color: #fff;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 700;
+      flex-shrink: 0;
+    }
+    .section-title {
+      font-size: 16px;
+      font-weight: 600;
+      color: #f0f6fc;
+    }
+    .section-body {
+      padding: 20px;
+    }
+    p {
+      color: #8b949e;
+      margin-bottom: 12px;
+    }
+    p:last-child { margin-bottom: 0; }
+    code {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-family: 'Cascadia Code', 'Consolas', 'Courier New', monospace;
+      font-size: 13px;
+      color: #79c0ff;
+    }
+    pre {
+      background: #0d1117;
+      border: 1px solid #30363d;
+      border-radius: 6px;
+      padding: 14px 16px;
+      overflow-x: auto;
+      margin: 12px 0;
+    }
+    pre code {
+      background: none;
+      border: none;
+      padding: 0;
+      color: #a5d6ff;
+      font-size: 13px;
+      line-height: 1.7;
+    }
+    .step {
+      display: flex;
+      gap: 12px;
+      margin-bottom: 14px;
+      align-items: flex-start;
+    }
+    .step:last-child { margin-bottom: 0; }
+    .step-dot {
+      width: 8px;
+      height: 8px;
+      background: #1f6feb;
+      border-radius: 50%;
+      margin-top: 8px;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-content p { margin-bottom: 6px; }
+    .tip {
+      background: #0d1117;
+      border-left: 3px solid #1f6feb;
+      border-radius: 0 4px 4px 0;
+      padding: 10px 14px;
+      margin: 12px 0;
+      color: #8b949e;
+      font-size: 13px;
+    }
+    .link-btn {
+      display: inline-block;
+      background: #1f6feb;
+      color: #fff;
+      text-decoration: none;
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 500;
+      margin-top: 8px;
+      transition: background 0.15s;
+    }
+    .link-btn:hover { background: #388bfd; }
+    .tag {
+      display: inline-block;
+      background: #21262d;
+      border: 1px solid #30363d;
+      color: #8b949e;
+      border-radius: 4px;
+      padding: 1px 6px;
+      font-size: 12px;
+      margin-left: 6px;
+    }
+    footer {
+      text-align: center;
+      color: #484f58;
+      font-size: 12px;
+      padding: 32px 0 16px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>ai-enclave</h1>
+    <span class="badge">SECURE</span>
+  </header>
+
+  <div class="container">
+
+    <!-- Section 1: Welcome -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">1</div>
+        <div class="section-title">Welcome to ai-enclave</div>
+      </div>
+      <div class="section-body">
+        <p>
+          ai-enclave is a <strong style="color:#c9d1d9">secure, isolated AI development environment</strong> running in Docker.
+          It provides Claude Code CLI, code-server (browser-based VS Code), GitHub CLI, and Bitwarden CLI —
+          all inside a sandboxed Ubuntu 24.04 container.
+        </p>
+        <p>
+          Your workspace is at <code>/workspace</code> inside the container.
+          API keys and secrets are managed via Bitwarden CLI and never stored in plain text.
+        </p>
+        <a class="link-btn" href="http://localhost:8080" target="_blank">Open code-server &rarr;</a>
+      </div>
+    </div>
+
+    <!-- Section 2: First Time Setup -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">2</div>
+        <div class="section-title">First Time Setup <span class="tag">初回のみ</span></div>
+      </div>
+      <div class="section-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">Claude Code 認証</strong></p>
+            <p>コンテナ内で <code>claude</code> を実行するとブラウザ認証が始まります。</p>
+            <pre><code>claude</code></pre>
+            <p>表示されるURLをブラウザで開き、Anthropicアカウントでログインしてください。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">プロジェクトのclone</strong></p>
+            <pre><code>git clone &lt;repo-url&gt; /workspace/&lt;project-name&gt;
+cd /workspace/&lt;project-name&gt;</code></pre>
+          </div>
+        </div>
+        <div class="tip">
+          GitHub認証には <code>gh auth login</code> を使用してください。
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 3: API Keys & Secrets -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">3</div>
+        <div class="section-title">API Keys &amp; Secrets</div>
+      </div>
+      <div class="section-body">
+        <p>シークレットは <strong style="color:#c9d1d9">Bitwarden CLI</strong> で管理します。平文ファイルへの保存は避けてください。</p>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">Bitwardenログイン &amp; アンロック</strong></p>
+            <pre><code>bw login
+export BW_SESSION=$(bw unlock --raw)</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">APIキーを環境変数に設定</strong></p>
+            <pre><code># 例: xAI APIキー
+export XAI_API_KEY=$(bw get password "xAI API Key")
+
+# 例: Anthropic APIキー
+export ANTHROPIC_API_KEY=$(bw get password "Anthropic API Key")</code></pre>
+          </div>
+        </div>
+        <div class="tip">
+          環境変数はコンテナ再起動で消えます。<code>~/.bashrc</code> に <code>bw get</code> コマンドを追記しておくと便利です。
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 4: Using code-server -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">4</div>
+        <div class="section-title">Using code-server</div>
+      </div>
+      <div class="section-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p>ブラウザで <a href="http://localhost:8080" style="color:#79c0ff">http://localhost:8080</a> にアクセスしてください。</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">パスワード確認（必要な場合）</strong></p>
+            <pre><code>cat ~/.config/code-server/config.yaml</code></pre>
+            <p><code>password:</code> の行に記載されたパスワードを使用してください。</p>
+            <div class="tip">start.batで起動した場合、<code>--auth none</code> オプションでパスワード不要になっています。</div>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">ターミナルから Claude Code を使う</strong></p>
+            <pre><code>cd /workspace/&lt;project&gt;
+claude</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 5: For Power Users -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">5</div>
+        <div class="section-title">For Power Users</div>
+      </div>
+      <div class="section-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">コンテナに直接接続</strong></p>
+            <pre><code>docker exec -it ai-enclave bash</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">tmux で複数セッション管理</strong></p>
+            <pre><code># 新規セッション
+tmux new -s main
+
+# セッション一覧
+tmux ls
+
+# アタッチ
+tmux attach -t main</code></pre>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">code-serverログ確認</strong></p>
+            <pre><code>tail -f /tmp/code-server.log</code></pre>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Section 6: Stopping -->
+    <div class="section">
+      <div class="section-header">
+        <div class="section-num">6</div>
+        <div class="section-title">Stopping</div>
+      </div>
+      <div class="section-body">
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">stop.bat をダブルクリック</strong> — Windowsから簡単停止</p>
+          </div>
+        </div>
+        <div class="step">
+          <div class="step-dot"></div>
+          <div class="step-content">
+            <p><strong style="color:#c9d1d9">コマンドラインから</strong></p>
+            <pre><code>docker compose stop</code></pre>
+          </div>
+        </div>
+        <div class="tip">
+          コンテナを完全に削除する場合: <code>docker compose down</code><br>
+          再起動は start.bat をダブルクリックするだけです。
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <footer>ai-enclave &mdash; Secure AI Development Environment</footer>
+
+  <script>
+    // code-server link check
+    (function() {
+      var btn = document.querySelector('.link-btn');
+      if (!btn) return;
+      fetch('http://localhost:8080', { mode: 'no-cors' })
+        .then(function() {
+          btn.style.background = '#238636';
+          btn.textContent = 'code-server is running \u2192';
+        })
+        .catch(function() {
+          btn.style.background = '#6e7681';
+          btn.textContent = 'code-server not yet started';
+        });
+    })();
+  </script>
+</body>
+</html>
